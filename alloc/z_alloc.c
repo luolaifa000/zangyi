@@ -6,9 +6,9 @@ void *z_alloc(size_t size)
     void *p;
     p = malloc(size);
     if (p == NULL) {
-        printf("malloc(%zu) failed", size);
+        //printf("malloc(%zu) failed", size);
     } else {
-        printf("malloc(%zu) at %p", size, p);
+        //printf("malloc(%zu) at %p", size, p);
     }
 
     return p;

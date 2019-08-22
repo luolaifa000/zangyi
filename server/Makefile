@@ -1,4 +1,4 @@
-OBJS = z_server.o z_alloc.o z_log.o z_epoll.o
+OBJS = z_server.o z_alloc.o z_tool.o z_log.o z_epoll.o
 
 server : $(OBJS)
 	gcc -o server $(OBJS)
@@ -8,7 +8,8 @@ z_server.o :
 
 z_alloc.o : 
 	gcc -c ../alloc/z_alloc.c
-
+z_tool.o : 
+	gcc -c ../tool/z_tool.c
 
 z_log.o : 
 	gcc -c ../log/z_log.c
