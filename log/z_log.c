@@ -8,6 +8,17 @@
 
 #include "z_log.h"
 
+#include "../server/z_server.h"
+
+
+static loger *logger;
+
+int z_log_init(char *filename)
+{
+    logger->filename = filename;
+    return Z_OK;
+}
+
 void z_log(const char *fmt, ...)
 {
     

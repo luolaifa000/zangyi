@@ -3,9 +3,10 @@
 #include <sys/epoll.h>
 
 
+#ifndef H_CONF
+#define H_CONF
 #include "../conf/z_conf.h"
-#include "../log/z_log.h"
-
+#endif
 
 #define Z_OK 0
 #define Z_ERROR 1
