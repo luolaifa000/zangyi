@@ -5,12 +5,38 @@
 #include "z_server.h"
 
 
+
 int main(int argc, char *argv[]) 
 {
-    struct server_instance *si;
-    //printf("%d", sizeof(*si));
-    si = z_alloc(sizeof(*si));
+   
+    int return_status = 0;
+    zserver *zs;
+    zconf *zf;
+    zs = z_alloc(sizeof(*zs));
+    zf = init_config(zf);
+    zs->zf = zf;
+    return_status = init_server_command(zs, argc, argv);
+    if (return_status != Z_OK) {
+        z_log("invalid option\n");
+        exit(Z_ERROR);
+    }
 
+    if (zs->port == 0 || zs->server_ip == NULL) {
+        z_log("invalid option\n");
+        exit(Z_ERROR);
+    }
+
+
+    printf("zs->port = %d\n", zs->port);
+    printf("zs->server_ip = %s\n", zs->server_ip);
+    printf("zs->zf->logfile = %s\n", zs->zf->logfile);
+
+    return Z_OK;
+}
+
+
+int init_server_command(zserver *zs, int argc, char **argv)
+{
     int opt;
     char *string = "s:p:";
 
@@ -18,24 +44,19 @@ int main(int argc, char *argv[])
         switch (opt)
         {
             case 's':
-                /* code */
-                si->server_ip = optarg;
+                zs->server_ip = optarg;
                 break;
             case 'p':
-                si->port = z_atoi(optarg, strlen(optarg));
+                zs->port = z_atoi(optarg, strlen(optarg));
                 break;
             default:
-                printf("invalid option -- '%c'", opt);
-                return 1;
+                z_log("invalid option -- '%c'\n", opt);
+                return Z_ERROR;
                 break;
         }
        
-    }  
-    printf("si->port = %d\n", si->port);
-        printf("si->server_ip = %s\n", si->server_ip);
-
-   // printf("si = %p", si);
-    return 0;
+    }
+    return Z_OK;
 }
 
 

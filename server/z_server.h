@@ -2,15 +2,21 @@
 #include <stdlib.h>
 #include <sys/epoll.h>
 
-//int z_atoi(uint8_t *line, size_t n);
+
+#include "../conf/z_conf.h"
+#include "../log/z_log.h"
 
 
-struct server_instance {
+#define Z_OK 0
+#define Z_ERROR 1
+
+typedef struct {
     int port;
     char *server_ip;
     int aaa;
     char b;
-};
+    zconf *zf;
+} zserver;
 
 
 

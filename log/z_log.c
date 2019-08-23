@@ -1,52 +1,53 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <errno.h>
 #include <string.h>
+#include <stdarg.h>
 #include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <time.h>
+#include <errno.h>
 
-void mcLog(const char *filename, char *string)
+#include "z_log.h"
+
+void z_log(const char *fmt, ...)
 {
-    int fd;
-    char *s = (char *) calloc(256, sizeof(char));
-    char *start = s;
-    time_t curtime;
-    time(&curtime);
-    char *date = ctime(&curtime);
-
-    date[strlen(date) - 1] = '\0';
-    while(*date && strlen(start) < 256) {
-        *s++ = *date++;
-    }
-    *s++ = ' ';
-
-    char *info = "[info]";
-
-    while(*info && strlen(start) < 256) {
-        *s++ = *info++;
-    }
-
-    *s++ = ' ';
-    while(*string && strlen(start) < 256) {
-        *s++ = *string++;
-    }
-    *s++ = '\n';
     
-    fd = open(filename,O_RDWR|O_CREAT|O_APPEND, "0777");
+    size_t size, len;
+    char buf[LOG_MAX_LEN];
+    va_list args;
+    ssize_t n;
+    struct timeval tv;  
+    /*struct timeval {
+time_t tv_sec; // seconds 
+long tv_usec; // microseconds 
+};*/
 
-    if (fd == -1) {
-        fprintf(stderr, "open() Error opening file: %s,filename:%s,string:%s\n", strerror(errno),filename, start);
+    len = 0;            
+    size = LOG_MAX_LEN; 
+
+    gettimeofday(&tv, NULL);
+
+    printf("timeval.tv.tv_sec:%d\n", tv.tv_sec);
+    printf("timeval.tv.tv_usec:%d\n", tv.tv_usec);
+    //timeval.tv.tv_sec:1565621144   时间戳
+    //timeval.tv.tv_usec:652879     微秒
+    buf[len++] = '[';
+    //printf("%d, %d, %d\n", size - len, len, tmp_time->tm_year);
+    len += strftime(buf + len, size - len, "%Y-%m-%d %H:%M:%S", localtime(&tv.tv_sec));
+    len--;
+    len += snprintf(buf + len, size - len, "%03ld", tv.tv_usec/1000);
+    len--;
+    len += snprintf(buf + len, size - len, "] %s:%d ", __FILE__, __LINE__);
+    len--;
+    len += snprintf(buf + len, size - len, "%s", " [info] ");
+    va_start(args, fmt);
+    len += vsnprintf(buf + len, size - len, fmt, args);
+    va_end(args);
+    len--;
+    buf[len++] = '\n';
+
+    n = write(2, buf, len);
+    if (n < 0) {
+        printf("write log error : %s\n", strerror(errno));
     }
-
-
-    int count = write(fd, start, strlen(start));
-
-    if (count == -1) {
-        fprintf(stderr, "write() Error opening file: %s,filename:%s,string:%s\n", strerror(errno),filename, start);
-    }
-    close(fd);
-    free(start);
 }
 
