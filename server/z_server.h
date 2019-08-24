@@ -18,6 +18,12 @@ typedef struct {
 } zserver;
 
 
+int server_init(zserver *zs);
+void server_start(int listenfd);
+
+
+
+
 
     
 

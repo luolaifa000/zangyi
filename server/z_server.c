@@ -22,6 +22,16 @@
 #include "../epoll/z_epoll.h"
 #endif
 
+#ifndef H_CONNECTION
+#define H_CONNECTION
+#include "../connection/z_connection.h"
+#endif
+
+#ifndef H_ALLOC
+#define H_ALLOC
+#include "../alloc/z_alloc.h"
+#endif
+
 
 static int parse_command_param(zserver *zs, int argc, char **argv)
 {
@@ -74,6 +84,25 @@ int main(int argc, char *argv[])
         exit(Z_ERROR);
     }
 
+    int sockedfd;
+    sockedfd = server_init(zs);
+    if (sockedfd < 0) {
+        z_log("server_init error\n");
+        return Z_ERROR;
+    }
+
+    server_start(sockedfd);
+    
+
+    /*printf("zs->port = %d\n", zs->port);
+    printf("zs->server_ip = %s\n", zs->server_ip);
+    printf("zs->zf->logfile = %s\n", zs->zf->logfile);*/
+
+    return Z_OK;
+}
+
+int server_init(zserver *zs)
+{
     int sockedfd, status; 
     struct sockaddr_in server_addr;  
     memset(&server_addr, 0, sizeof(server_addr));
@@ -103,20 +132,19 @@ int main(int argc, char *argv[])
     } else {
         z_log("listen socket ok!\n");
     }
-
-    epoll_init(sockedfd);
-    epoll_add_in(sockedfd, NULL);
-    epoll_loop();
-
-
-   
-    /*printf("zs->port = %d\n", zs->port);
-    printf("zs->server_ip = %s\n", zs->server_ip);
-    printf("zs->zf->logfile = %s\n", zs->zf->logfile);*/
-
-    return Z_OK;
+    return sockedfd;
 }
 
+
+void server_start(int listenfd)
+{
+    zbox *box;
+    box = (zbox *) z_alloc(sizeof(*box));
+    box->fd = listenfd;
+    epoll_init(listenfd);
+    epoll_add_in(listenfd, box);
+    epoll_loop();
+}
 
 
 
