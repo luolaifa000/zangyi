@@ -3,17 +3,21 @@
 #include <sys/epoll.h>
 
 
-
-struct event_base {
-    int ep;      
-    struct epoll_event *event;  
-    int nevent;  
-};
-
-
+#define DEFAULT_EPOLL_SIZE 100
+#define DEFAULT_EPOLL_TIMEOUT -1
+typedef struct {
+    int epfd;     
+    int listenfd; 
+    int timeout;
+    int epoll_size;
+} event_base;
 
     
-
+int epoll_init(int sd);
+void epoll_loop();
+int epoll_add_in_out(int fd, void *data);
+int epoll_add_in(int fd, void *data);
+int epoll_add_out(int fd, void *data);
 
 
 

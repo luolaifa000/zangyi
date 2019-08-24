@@ -17,6 +17,37 @@
 #include "../log/z_log.h"
 #endif
 
+#ifndef H_EPOLL
+#define H_EPOLL
+#include "../epoll/z_epoll.h"
+#endif
+
+
+static int parse_command_param(zserver *zs, int argc, char **argv)
+{
+    int opt;
+    char *string = "s:p:";
+
+    while ((opt = getopt(argc, argv, string))!= -1) {  
+        switch (opt)
+        {
+            case 's':
+                zs->server_ip = optarg;
+                break;
+            case 'p':
+                zs->port = z_atoi(optarg, strlen(optarg));
+                break;
+            default:
+                return Z_ERROR;
+                break;
+        }
+       
+    }
+    if (zs->port == 0 || zs->server_ip == NULL) {
+        return Z_ERROR;
+    }
+    return Z_OK;
+}
 
 
 int main(int argc, char *argv[]) 
@@ -36,7 +67,7 @@ int main(int argc, char *argv[])
         exit(Z_ERROR);
     }
 
-    return_status = init_server_command(zs, argc, argv);
+    return_status = parse_command_param(zs, argc, argv);
 
     if (return_status != Z_OK) {
         z_log("invalid option1\n");
@@ -73,9 +104,12 @@ int main(int argc, char *argv[])
         z_log("listen socket ok!\n");
     }
 
-    
-    
+    epoll_init(sockedfd);
+    epoll_add_in(sockedfd, NULL);
+    epoll_loop();
 
+
+   
     /*printf("zs->port = %d\n", zs->port);
     printf("zs->server_ip = %s\n", zs->server_ip);
     printf("zs->zf->logfile = %s\n", zs->zf->logfile);*/
@@ -84,31 +118,7 @@ int main(int argc, char *argv[])
 }
 
 
-int init_server_command(zserver *zs, int argc, char **argv)
-{
-    int opt;
-    char *string = "s:p:";
 
-    while ((opt = getopt(argc, argv, string))!= -1) {  
-        switch (opt)
-        {
-            case 's':
-                zs->server_ip = optarg;
-                break;
-            case 'p':
-                zs->port = z_atoi(optarg, strlen(optarg));
-                break;
-            default:
-                return Z_ERROR;
-                break;
-        }
-       
-    }
-    if (zs->port == 0 || zs->server_ip == NULL) {
-        return Z_ERROR;
-    }
-    return Z_OK;
-}
 
 
 

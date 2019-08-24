@@ -1,7 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/epoll.h>
-
 
 #ifndef H_CONF
 #define H_CONF
