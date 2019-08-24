@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
 
     int sockedfd;
     sockedfd = server_init(zs);
-    if (sockedfd < 0) {
+    if (sockedfd <= 0) {
         z_log("server_init error\n");
         return Z_ERROR;
     }

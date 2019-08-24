@@ -30,7 +30,7 @@ void epoll_loop()
 {
     int nfds, i;
     struct epoll_event *event;
-    event = z_alloc(eb->epoll_size * sizeof(*event));
+    event = (struct epoll_event *)z_alloc(eb->epoll_size * sizeof(*event));
     for ( ; ; ) {
         nfds = epoll_wait(eb->epfd, event, eb->epoll_size, eb->timeout);
         if (nfds < 0) {
@@ -43,17 +43,16 @@ void epoll_loop()
         printf("nfds = %d\n", nfds);
         //printf("nfds = %d\n", nfds);
         for (i = 0; i < nfds; ++i) {
+            zbox *box = (zbox *) event[i].data.ptr;
             if (event[i].events & EPOLLIN) {
-                zbox *box = (zbox *) event[i].data.ptr;
                 if (box->fd == eb->listenfd) {
                     connection_accept(box);
                 } else {
                     connection_read(box);
                 }
-                printf("EPOLLIN event[i].events = %d, box->fd = %d, eb->listenfd = %d\n", event[i].events, box->fd, eb->listenfd);
+                //printf("EPOLLIN event[i].events = %d, box->fd = %d, eb->listenfd = %d\n", event[i].events, box->fd, eb->listenfd);
                 
             } else if (event[i].events & EPOLLOUT) {
-                zbox *box = (zbox *) event[i].data.ptr;
                 connection_write(box);
             } else {
 
