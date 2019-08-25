@@ -1,4 +1,4 @@
-OBJS = z_server.o z_alloc.o z_conf.o z_tool.o z_connection.o z_log.o z_epoll.o
+OBJS = z_server.o z_alloc.o z_conf.o z_tool.o z_connection.o z_log.o z_epoll.o z_protocol.o
 
 server : $(OBJS)
 	gcc -o server $(OBJS)
@@ -21,6 +21,9 @@ z_log.o :
 
 z_epoll.o : 
 	gcc -c ../epoll/z_epoll.c
+	
+z_protocol.o : 
+	gcc -c ../protocol/z_protocol.c
 
 clean : 
 	rm server $(OBJS)

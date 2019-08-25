@@ -32,6 +32,11 @@
 #include "../alloc/z_alloc.h"
 #endif
 
+#ifndef H_TOOL
+#define H_TOOL
+#include "../tool/z_tool.h"
+#endif
+
 
 static int parse_command_param(zserver *zs, int argc, char **argv)
 {
@@ -117,6 +122,9 @@ int server_init(zserver *zs)
     } else {
         z_log("create socket %d\n", sockedfd);
     }
+    
+    z_set_reuseaddr(sockedfd);
+
     status = bind(sockedfd, (struct sockaddr *)&server_addr, sizeof(struct sockaddr));
     if (status < 0) {
         z_log("bind socket error %s\n", strerror(errno));
@@ -132,6 +140,10 @@ int server_init(zserver *zs)
     } else {
         z_log("listen socket ok!\n");
     }
+
+    z_set_nonblocking(sockedfd);
+    
+
     return sockedfd;
 }
 
@@ -139,7 +151,7 @@ int server_init(zserver *zs)
 void server_start(int listenfd)
 {
     zbox *box;
-    box = (zbox *) z_alloc(sizeof(*box));
+    box = get_zbox();
     box->fd = listenfd;
     epoll_init(listenfd);
     epoll_add_in(listenfd, box);

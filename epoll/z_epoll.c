@@ -76,6 +76,22 @@ int epoll_add_in_out(int fd, void *ptr)
     return Z_OK;
 }
 
+
+int epoll_mod_in_out(int fd, void *ptr)
+{
+    int status;
+    struct epoll_event ev; 
+    ev.data.ptr = ptr;
+    ev.events = EPOLLIN | EPOLLOUT | EPOLLET;
+    status = epoll_ctl(eb->epfd, EPOLL_CTL_MOD, fd, &ev);
+    if (status < 0) {
+        z_log("epoll_ctl error! %s\n", strerror(errno));
+        return Z_ERROR;
+    }
+    z_log("epoll_mod_in_out ok! %d\n", fd);
+    return Z_OK;
+}
+
 int epoll_del_in_out(int fd)
 {
     int status;

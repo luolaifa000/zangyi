@@ -7,7 +7,7 @@
 #endif
 
 #define Z_OK 0
-#define Z_ERROR 1
+#define Z_ERROR -1
 
 typedef struct {
     int port;
