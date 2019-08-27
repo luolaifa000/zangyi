@@ -75,9 +75,9 @@ int connection_read(zbox *box)
     } else if (n == 0) {
         return Z_OK;
     }
-    //*(box->rbuf->data + n) = '\0';
+    *(box->rbuf->data + n) = '\0';
     printf("read data = %s\n", box->rbuf->data);
-    parse_read_message(box->rbuf->data);
+    parse_command(box->rbuf->data);
     epoll_mod_in_out(box->fd, box);
     return Z_OK; 
     
