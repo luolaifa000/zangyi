@@ -17,9 +17,7 @@ z_hashtable *hashtable_init(int size)
     hash->size = size;
     hash->countNode = 0;
     hash->func = hash_function;
-
     hash->bucket = (z_hashnode **) z_alloc(sizeof(z_hashnode) * hash->size);
-
     return hash;
 }
 
@@ -35,9 +33,9 @@ void printf_hashtable(z_hashtable *hash)
     z_hashnode *p;
     printf("begin print z_hashtable:%d\n", hash->countNode);
     while (k < hash->size) {
-        p = (z_hashnode *) (hash->bucket + k);
+        p = ((z_hashnode *) (hash->bucket)) + k;
         while (p) {
-            printf("id = %d, index = %d,key = %s,value = %s\n", k, p->index, p->key, p->value);
+            printf("address = %d, size = %d, id = %d, index = %d, key = %s, value = %s\n", p, sizeof(*p), k, p->index, p->key, p->value);
             p = (z_hashnode *) p->next;
         }
         k++;
@@ -49,15 +47,15 @@ void printf_hashtable(z_hashtable *hash)
 int hashtable_insert(z_hashtable *hash, char *key, void *value)
 {
     int index = (*((hashHandler) hash->func))(key, hash->size);
-    z_hashnode *p = (z_hashnode *) (hash->bucket + index);
-    //z_hashnode *p_pre;
+    z_hashnode *p = ((z_hashnode *) (hash->bucket)) + index;
     if (p->key) {
         while (p->next) {
             p = p->next;
         }
         p->next = hashnode_create(hash, key, value);
+        printf("hashnode_create\n");
     } else {
-        printf("init");
+        printf("hashnode_init\n");
         hashnode_init(hash, p, key, value);
     }
     hash->countNode++;
@@ -120,7 +118,7 @@ int hash_function(char *key, int size)
 z_hashnode *hashnode_create(z_hashtable *hash, char *key, void *value)
 {
     z_hashnode *temp;
-    temp = (z_hashnode *) z_alloc(sizeof(z_hashnode *));
+    temp = (z_hashnode *) z_alloc(sizeof(z_hashnode));
     temp->key = key;
     temp->value = value;
     temp->index = (*((hashHandler) hash->func))(key, hash->size);
