@@ -50,7 +50,7 @@ int connection_accept(zbox *box)
     cbox = get_zbox();
     cbox->fd = connfd;
     epoll_add_in(cbox->fd, cbox);
-    printf("accept\n");
+    //printf("accept\n");
 
 }
 
@@ -85,6 +85,7 @@ int connection_read(zbox *box)
 
 int connection_write(zbox *box)
 {
+    return Z_OK; 
     printf("write\n");
     char *sss = "OK";
     ssize_t n;

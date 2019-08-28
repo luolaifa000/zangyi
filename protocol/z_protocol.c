@@ -22,34 +22,34 @@ void set_command(char *buf)
  **/
 int parse_command(char *message)
 {
+   
     char *str = message;
     int len = 0;
+    struct z_command *cmd;
+    int i = 0;
     while (*str) {
-        if (*str == 13) {
+        printf("asnic = %d\n", *str);
+        if (*str == 32) {
             str++;
+            goto done;
+            /*
             if (*str != 13) {
 
             } else {
                 goto done;
-            }
-            
-        } else {
-            len++;
+            }*/
         }
         str++;
     }
+done:
+    len = str - message - 1;
     if (len == 0) {
         goto error;
     }
-    struct z_command *cmd;
-    int i;
     printf("commands = %d\n", sizeof(commands) / sizeof(struct z_command));
     for (cmd = commands, i =0; i < sizeof(commands) / sizeof(struct z_command); cmd++,i++) {
-        printf("commands = %s\n", cmd->command);
+        printf("commands = %s, len = %d\n", cmd->command, len);
     }
-
-    
-done:
     return Z_OK;
 error:
     return Z_ERROR;

@@ -40,7 +40,7 @@ void epoll_loop()
             z_log("epoll wait on e %d with failed:%s", eb->epfd, strerror(errno));
             break;
         }
-        printf("nfds = %d\n", nfds);
+        //printf("nfds = %d\n", nfds);
         //printf("nfds = %d\n", nfds);
         for (i = 0; i < nfds; ++i) {
             zbox *box = (zbox *) event[i].data.ptr;

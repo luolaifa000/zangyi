@@ -60,7 +60,7 @@ long tv_usec; // microseconds
     len--;
     buf[len++] = '\n';
 
-    n = write(2, buf, len);
+    //n = write(2, buf, len);
     n = fwrite(buf, len, 1, fp);
     if (n < 0) {
         printf("write log error : %s\n", strerror(errno));
