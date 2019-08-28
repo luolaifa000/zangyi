@@ -2,9 +2,19 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef void (*command_handler)(char *buf);
+#ifndef H_CONNECTION
+#define H_CONNECTION
+#include "../connection/z_connection.h"
+#endif
 
-void set_command(char *buf);
+
+#define KEY_TYPE 1
+#define VALUE_TYPE 2
+
+
+typedef int (*command_handler)(zbox *box, char *buf);
+
+int set_command(zbox *box, char *buf);
 
 struct z_command {
     char *command;
@@ -13,7 +23,7 @@ struct z_command {
 
 
 
-int parse_command(char *message);
+int parse_command(zbox *box);
 
 
 static struct z_command commands[] = {

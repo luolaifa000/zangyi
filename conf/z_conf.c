@@ -2,9 +2,9 @@
 #include "z_conf.h"
 #include "../alloc/z_alloc.h"
 
-zconf *init_config()
+z_conf *init_config()
 {
-    zconf *zc;
+    z_conf *zc;
     zc = z_alloc(sizeof(*zc));
     if (zc == NULL) {
         z_log("z_alloc error\n");

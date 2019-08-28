@@ -3,7 +3,11 @@
 #include <errno.h>
 #include <sys/socket.h>
 
+#ifndef H_CONNECTION
+#define H_CONNECTION
 #include "z_connection.h"
+#endif
+
 #include "../log/z_log.h"
 #include "../alloc/z_alloc.h"
 #include "../epoll/z_epoll.h"
@@ -13,10 +17,10 @@
 
 
 
-zbuf *get_zbuf()
+z_buf *get_zbuf()
 {
-    zbuf *buf;
-    buf = (zbuf *) z_alloc(sizeof(*buf));
+    z_buf *buf;
+    buf = (z_buf *) z_alloc(sizeof(*buf));
     buf->size = Z_BUF_SIZE;
     buf->data = (char *) z_alloc((size_t) buf->size);
     return buf;
@@ -77,7 +81,7 @@ int connection_read(zbox *box)
     }
     *(box->rbuf->data + n) = '\0';
     printf("read data = %s\n", box->rbuf->data);
-    parse_command(box->rbuf->data);
+    parse_command(box);
     epoll_mod_in_out(box->fd, box);
     return Z_OK; 
     

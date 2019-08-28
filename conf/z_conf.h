@@ -2,7 +2,7 @@
 
 typedef struct {
     char *logfile;
-} zconf;
+} z_conf;
 
 
-zconf *init_config();
+z_conf *init_config();

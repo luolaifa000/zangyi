@@ -4,15 +4,15 @@
 typedef struct {
     int size;
     char *data;
-} zbuf;
+} z_buf;
 
 typedef struct {
     int fd;
-    zbuf *rbuf;
-    zbuf *wbuf;
+    z_buf *rbuf;
+    z_buf *wbuf;
 } zbox;
 
-zbuf *get_zbuf();
+z_buf *get_zbuf();
 
 zbox *get_zbox();
 

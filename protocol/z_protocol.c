@@ -3,16 +3,49 @@
 #include <string.h>
 
 #include "z_protocol.h"
-#include "../server/z_server.h"
+#include "../log/z_log.h"
+#include "../alloc/z_alloc.h"
 
-void set_command(char *buf)
+int set_command(zbox *box, char *buf)
 {
+    char *key, *key_start, *value, *value_start;
+    key = key_start = (char *) z_alloc(255);
+    value = value_start= (char *) z_alloc(255);
+    char *str = buf;
+    int state = KEY_TYPE;
+    while (*str) {
+        switch (state) {
+            case KEY_TYPE:
+                if (*str == Z_SPACE) {
+                    state = VALUE_TYPE;
+                    str++;
+                } else {
+                    *key++ = *str++;
+                }
+                break;
+            case VALUE_TYPE:
+                if (*str == Z_SPACE) {
+                    return Z_ERROR;
+                } else {
+                    *value++ = *str++;
+                }
+                break;
+            default:
+                return Z_ERROR;
+                break;
+        }
+    }
+    *key = '\0';
+    *value = '\0';
 
+    printf("set_command = %s\n", buf);
+    printf("key = %s, value = %s\n", key_start, value_start);
+    return Z_OK;
 }
 
 
 /**
- * 最简单协议就是以CRLF隔开
+ * 最简单协议就是以空格隔开
  * 目前先支持这2个协议
  * set
  * name
@@ -20,16 +53,14 @@ void set_command(char *buf)
  * get
  * name
  **/
-int parse_command(char *message)
+int parse_command(zbox *box)
 {
-   
-    char *str = message;
-    int len = 0;
+    char *str = box->rbuf->data;
+    int len = 0, i = 0, status = Z_OK;
     struct z_command *cmd;
-    int i = 0;
     while (*str) {
-        printf("asnic = %d\n", *str);
-        if (*str == 32) {
+        //printf("asnic = %d\n", *str);
+        if (*str == Z_SPACE) {
             str++;
             goto done;
             /*
@@ -42,15 +73,27 @@ int parse_command(char *message)
         str++;
     }
 done:
-    len = str - message - 1;
+    len = str - box->rbuf->data - 1;
     if (len == 0) {
         goto error;
     }
-    printf("commands = %d\n", sizeof(commands) / sizeof(struct z_command));
+    //printf("commands = %d\n", sizeof(commands) / sizeof(struct z_command));
     for (cmd = commands, i =0; i < sizeof(commands) / sizeof(struct z_command); cmd++,i++) {
-        printf("commands = %s, len = %d\n", cmd->command, len);
+        if (strncmp(cmd->command, box->rbuf->data, len) == 0) {
+            status = cmd->handler(box, str);
+            if (status != 0) {
+                z_log("parse %s command format error!\n", cmd->command);
+                printf("parse %s command format error!\n", cmd->command);
+                return Z_ERROR;
+            }
+            return Z_OK;
+        }
+        //printf("commands = %s, len = %d\n", cmd->command, len);
     }
-    return Z_OK;
+
+    z_log("unknow command : %s\n", box->rbuf->data);
+    printf("unknow command : %s\n", box->rbuf->data);
+    return Z_ERROR;
 error:
     return Z_ERROR;
 }

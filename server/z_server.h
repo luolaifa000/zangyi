@@ -6,19 +6,18 @@
 #include "../conf/z_conf.h"
 #endif
 
-#define Z_OK 0
-#define Z_ERROR -1
+
 
 typedef struct {
     int port;
     char *server_ip;
     int aaa;
     char b;
-    zconf *zf;
-} zserver;
+    z_conf *zf;
+} z_server;
 
 
-int server_init(zserver *zs);
+int server_init(z_server *zs);
 void server_start(int listenfd);
 
 

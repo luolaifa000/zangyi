@@ -3,7 +3,13 @@
 #include <string.h>
 #include <stdarg.h>
 
+#define Z_OK 0
+#define Z_ERROR -1
+
+#define Z_SPACE 32
+
 #define LOG_MAX_LEN 256
+
 
 typedef struct {
     char *filename;

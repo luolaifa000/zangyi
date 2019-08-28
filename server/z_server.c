@@ -37,8 +37,13 @@
 #include "../tool/z_tool.h"
 #endif
 
+#ifndef H_HASHTABLE
+#define H_HASHTABLE
+#include "../hashtable/z_hashtable.h"
+#endif
 
-static int parse_command_param(zserver *zs, int argc, char **argv)
+
+static int parse_command_param(z_server *zs, int argc, char **argv)
 {
     int opt;
     char *string = "s:p:";
@@ -69,8 +74,8 @@ int main(int argc, char *argv[])
 {
     
     int return_status = 0;
-    zserver *zs;
-    zconf *zf;
+    z_server *zs;
+    z_conf *zf;
     zs = z_alloc(sizeof(*zs));
     zf = init_config(zf);
     zs->zf = zf;
@@ -106,7 +111,7 @@ int main(int argc, char *argv[])
     return Z_OK;
 }
 
-int server_init(zserver *zs)
+int server_init(z_server *zs)
 {
     int sockedfd, status; 
     struct sockaddr_in server_addr;  
