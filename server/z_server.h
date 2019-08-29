@@ -19,6 +19,7 @@ typedef struct {
 
 int server_init(z_server *zs);
 void server_start(int listenfd);
+static int parse_command_param(z_server *zs, int argc, char **argv);
 
 
 

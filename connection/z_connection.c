@@ -89,10 +89,20 @@ int connection_read(zbox *box)
 
 int connection_write(zbox *box)
 {
-    return Z_OK; 
+    
     printf("write\n");
-    char *sss = "OK";
+
+    char *sss = "nil\r\n";
     ssize_t n;
-    n = write(box->fd, sss, strlen(sss));
+    int len = strlen(box->wbuf->data);
+    if (len > 0) {
+        char *s = box->wbuf->data;
+        *(s+len) = '\r';
+        *(s+len+1) = '\n';
+        *(s+len+2) = '\0';
+        n = write(box->fd, box->wbuf->data, strlen(box->wbuf->data));
+    } else {
+        n = write(box->fd, sss, strlen(sss));
+    }
     return n;
 }

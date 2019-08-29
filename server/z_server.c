@@ -43,31 +43,9 @@
 #endif
 
 
-static int parse_command_param(z_server *zs, int argc, char **argv)
-{
-    int opt;
-    char *string = "s:p:";
+z_hashtable *zhash;
 
-    while ((opt = getopt(argc, argv, string))!= -1) {  
-        switch (opt)
-        {
-            case 's':
-                zs->server_ip = optarg;
-                break;
-            case 'p':
-                zs->port = z_atoi(optarg, strlen(optarg));
-                break;
-            default:
-                return Z_ERROR;
-                break;
-        }
-       
-    }
-    if (zs->port == 0 || zs->server_ip == NULL) {
-        return Z_ERROR;
-    }
-    return Z_OK;
-}
+
 
 
 int main(int argc, char *argv[]) 
@@ -160,9 +138,37 @@ void server_start(int listenfd)
     box->fd = listenfd;
     epoll_init(listenfd);
     epoll_add_in(listenfd, box);
+    zhash = hashtable_init(10);
     epoll_loop();
 }
 
+
+
+static int parse_command_param(z_server *zs, int argc, char **argv)
+{
+    int opt;
+    char *string = "s:p:";
+
+    while ((opt = getopt(argc, argv, string))!= -1) {  
+        switch (opt)
+        {
+            case 's':
+                zs->server_ip = optarg;
+                break;
+            case 'p':
+                zs->port = z_atoi(optarg, strlen(optarg));
+                break;
+            default:
+                return Z_ERROR;
+                break;
+        }
+       
+    }
+    if (zs->port == 0 || zs->server_ip == NULL) {
+        return Z_ERROR;
+    }
+    return Z_OK;
+}
 
 
 

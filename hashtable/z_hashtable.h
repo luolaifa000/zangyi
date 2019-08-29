@@ -39,3 +39,5 @@ z_hashnode *hashnode_init(z_hashtable *hash, z_hashnode *hashnode, char *key, vo
 void printf_hashtable(z_hashtable *hash);
 
 z_hashnode *hashnode_empty(z_hashnode *hashnode);
+
+

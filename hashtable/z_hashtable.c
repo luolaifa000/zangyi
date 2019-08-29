@@ -85,7 +85,7 @@ z_hashnode *hashtable_find(z_hashtable *hash, char *key)
             p = p->next;
         }
     } 
-    printf("not find key = %s\n", p->key);
+    printf("not find key = %s\n", key);
     return NULL;
 }
 

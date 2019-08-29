@@ -17,7 +17,12 @@ void *z_alloc(size_t size)
 }
 
 
-void *z_free(void *p)
+void z_free(void *p)
 {
     free(p);
+}
+
+void z_memset(void *p, int size)
+{
+    memset(p, '\0', size);
 }
