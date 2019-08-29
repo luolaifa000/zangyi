@@ -4,6 +4,12 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/socket.h>
+#include <time.h>
+#include <string.h>
+
+#include "z_tool.h"
+
+#include "../alloc/z_alloc.h"
 
 
 
@@ -54,4 +60,24 @@ int z_atoi(uint8_t *line, size_t n)
     }
 
     return value;
+}
+
+
+char *rand_string()
+{
+    char *str = (char *)z_alloc(RAND_STRING_LENGTH + 1);
+    int i;
+     
+    struct timeval tv; 
+    gettimeofday(&tv, NULL);
+    srand(tv.tv_sec + tv.tv_usec);
+
+    char src[] = "0123456789abcdefghijklmnopqrstuvwxyz";
+    for (i = 0; i < RAND_STRING_LENGTH; i++) {
+        *(str+i) = src[rand() % strlen(src)];
+    }
+    *(str+i+1) = '\0';
+    printf("%s\n", str);//输出生成的随机数。
+     
+    return str;
 }

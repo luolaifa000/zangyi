@@ -26,14 +26,16 @@ typedef int (*hashHandler)(char *key, int size);
 
 int hash_function(char *key, int size);
 
-int hashtable_insert(z_hashtable *hash, char *key, void *value);
+z_hashnode *hashtable_insert(z_hashtable *hash, char *key, void *value);
 
-char *hashtable_find(z_hashtable *hash, char *key);
+z_hashnode *hashtable_find(z_hashtable *hash, char *key);
 
-int hashtable_delete(z_hashtable *hash, char *key);
+z_hashnode *hashtable_delete(z_hashtable *hash, char *key);
 
 z_hashnode *hashnode_create(z_hashtable *hash, char *key, void *value);
 
 z_hashnode *hashnode_init(z_hashtable *hash, z_hashnode *hashnode, char *key, void *value);
 
 void printf_hashtable(z_hashtable *hash);
+
+z_hashnode *hashnode_empty(z_hashnode *hashnode);

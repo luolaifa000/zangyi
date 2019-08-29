@@ -9,6 +9,8 @@
 
 #include "../alloc/z_alloc.h"
 
+#include "../log/z_log.h"
+
 
 z_hashtable *hashtable_init(int size)
 {
@@ -40,66 +42,85 @@ void printf_hashtable(z_hashtable *hash)
         }
         k++;
     }
-    exit(1);
+    
 }
 
 
-int hashtable_insert(z_hashtable *hash, char *key, void *value)
+z_hashnode *hashtable_insert(z_hashtable *hash, char *key, void *value)
 {
     int index = (*((hashHandler) hash->func))(key, hash->size);
     z_hashnode *p = ((z_hashnode *) (hash->bucket)) + index;
+    z_hashnode *pre;
     if (p->key) {
-        while (p->next) {
+        pre = p;
+        while (p) {
+            if (strcmp(key, p->key) == 0) {
+                //printf("sdfsdfdsf\n");
+                p->value = value;
+                return Z_OK;
+            }
+            pre = p;
             p = p->next;
         }
-        p->next = hashnode_create(hash, key, value);
+        pre->next = hashnode_create(hash, key, value);
         printf("hashnode_create\n");
     } else {
         printf("hashnode_init\n");
         hashnode_init(hash, p, key, value);
     }
     hash->countNode++;
-    return ;
+    return Z_OK;
 }
 
-char *hashtable_find(z_hashtable *hash, char *key)
+z_hashnode *hashtable_find(z_hashtable *hash, char *key)
 {
     int index = (*((hashHandler) hash->func))(key, hash->size);
-    if (hash->bucket[index]) {
-        z_hashnode *p = hash->bucket[index];
+    z_hashnode *p = ((z_hashnode *) (hash->bucket)) + index;
+    if (p->key) {
         while(p) {
             if (strcmp(key, p->key) == 0) {
-                return p->value;
+                printf("find key = %s, value = %s\n", p->key, p->value);
+                return p;
             }
             p = p->next;
         }
     } 
+    printf("not find key = %s\n", p->key);
     return NULL;
 }
 
 
-int hashtable_delete(z_hashtable *hash, char *key)
+z_hashnode *hashtable_delete(z_hashtable *hash, char *key)
 {
     int index = (*((hashHandler) hash->func))(key, hash->size);
-    if (hash->bucket[index]) {
-        z_hashnode *p = hash->bucket[index];
-        z_hashnode *p_pre = p;
+    z_hashnode *p = ((z_hashnode *) (hash->bucket)) + index;
+    z_hashnode *pre;
+    if (p->key && p->next == NULL) {
+        printf("delete key = %s, value = %s\n", p->key, p->value);
+        hashnode_empty(p);
+        hash->countNode--;
+        return p;
+    } else if (p->key) {
+        pre = p;
         while(p) {
             if (strcmp(key, p->key) == 0) {
-                //尾节点
-                if (p->next == NULL) {
-                    p_pre->next = NULL;
+                printf("delete key = %s, value = %s\n", p->key, p->value);
+                if (p->next) {
+                    pre->next = p->next;
                 } else {
-                    p_pre->next = p->next;
+                    pre->next = NULL;
                 }
                 hash->countNode--;
-                return 1;
+                return p;
             }
-            p_pre = p;
+            pre = p;
             p = p->next;
         }
-    } 
-    return 0;
+        printf("not delete key = %s\n", p->key);
+    } else {
+        printf("not delete key = %s\n", p->key);
+    }
+    return NULL;
 }
 
 
@@ -132,6 +153,16 @@ z_hashnode *hashnode_init(z_hashtable *hash, z_hashnode *hashnode, char *key, vo
     hashnode->key = key;
     hashnode->value = value;
     hashnode->index = (*((hashHandler) hash->func))(key, hash->size);
+    hashnode->next = NULL;
+    return hashnode;
+}
+
+
+z_hashnode *hashnode_empty(z_hashnode *hashnode)
+{
+    hashnode->key = NULL;
+    hashnode->value = NULL;
+    hashnode->index = 0;
     hashnode->next = NULL;
     return hashnode;
 }
